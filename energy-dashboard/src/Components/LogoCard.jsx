@@ -1,4 +1,4 @@
-import Logo from './assets/EnergyLogo.png'
+import Logo from '../assets/EnergyLogo.png'
 const LogoCard=()=>{
 return(
     <div className="mx-4 p-1 w-1/11 h-full flex justify-around items-center-safe">
