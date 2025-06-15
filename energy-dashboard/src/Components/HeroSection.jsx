@@ -17,7 +17,7 @@ const HeroSection=()=>{
     <div className="absolute left-1/4 -translate-x-1/2 top-1/2 -translate-y-1/2 p-15 w-1/3 h-1/2 rounded-2xl bg-foreground flex-col items-center-safe">
     <p className='text-primary text-3xl font-bold my-4 '>Join India's most popular energy supplier.</p>
     <p className="text-primary text-lg font-semibold my-6 ">Enter your postcode to get a quote:</p>
-    <div className="flex items-center-safe rounded-xl h-1/4 shadow-lg">
+    <div className=" flex items-center-safe rounded-xl h-1/4 mb-4 shadow-lg">
    <input
         type="text"
         value={inputValue}
@@ -25,8 +25,10 @@ const HeroSection=()=>{
         placeholder="Type your pincode..."
         className="flex-1 text-primary p-5 h-full border-none focus:outline-none font-semibold"
       />
-    <button className="p-2 h-full rounded-r-xl bg-primary hover:bg-primaryhover text-foreground font-medium" >Get a Quote</button>
-        </div>
+    <button className="p-2 h-full rounded-r-xl bg-primary hover:bg-primaryhover text-foreground font-medium" >
+      Get a Quote
+      </button>
+      </div>
     </div>
     </div>
     )
