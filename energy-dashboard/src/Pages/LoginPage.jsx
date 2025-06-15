@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import axios from 'axios'
-const BACKEND_URL = import.meta.env.BACKEND_URL
-const BACKEND_GITHUB_TOKEN=import.meta.env.BACKEND_GITHUB_TOKEN
+// const BACKEND_URL = import.meta.env.BACKEND_URL
+// const BACKEND_GITHUB_TOKEN=import.meta.env.BACKEND_GITHUB_TOKEN
 
 const LoginPage = () => {
   const [email, setEmail] = useState("")
@@ -10,23 +10,29 @@ const LoginPage = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault() 
-  // try {
-  //   const res = await axios.post(
-  //       "https://legendary-dollop-v7p7vv6gq5cw6wj-4000.app.github.dev/api/v1/users/login",
-  //       { email, password },
-  //       {
-  //         headers:{
-  //           'X-Github-Token':BACKEND_GITHUB_TOKEN
-  //         },
-  //         withCredentials: true }
-  //   )
-  //   console.log("Login success:", res.data)
-  //   //navigate("/dashboard") 
-  // } catch (error) {
-  //   console.error("Login failed:", error.response?.data?.message || error.message)
-  //   alert("Login failed: " + (error.response?.data?.message || "Unknown error"))
-  // }
-  //   console.log({ email, password })
+  try {
+    const response = await axios.post(
+        "https://legendary-dollop-v7p7vv6gq5cw6wj-8000.app.github.dev/api/v1/users/login",
+        { email, password },
+        {
+          headers:{
+            'Content-Type': "application/json"
+          },
+          withCredentials: true }
+    )
+   console.log("Login Success:", response.data);
+    alert(response.data.message);
+    //navigate("/dashboard") 
+  } catch (error) {
+     if (error.response) {
+      console.error("Login Error:", error.response.data);
+      alert(error.response.data.message); // e.g., "User does not exist"
+    } else {
+      console.error("Unknown Error:", error.message);
+      alert("Something went wrong. Please try again.");
+    }
+  }
+    console.log({ email, password })
   }
 
   return (
