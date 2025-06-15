@@ -32,4 +32,15 @@ import billRouter from "./routes/bill.routes.js";
 //routes declaration
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/bills",billRouter)
+
+//for global error handling
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+    errors: err.errors || []
+  });
+});
 export {app}

@@ -1,10 +1,9 @@
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link , useNavigate} from "react-router-dom"
 import axios from 'axios'
-// const BACKEND_URL = import.meta.env.BACKEND_URL
-// const BACKEND_GITHUB_TOKEN=import.meta.env.BACKEND_GITHUB_TOKEN
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -12,7 +11,7 @@ const LoginPage = () => {
     e.preventDefault() 
   try {
     const response = await axios.post(
-        "https://legendary-dollop-v7p7vv6gq5cw6wj-8000.app.github.dev/api/v1/users/login",
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/login`,
         { email, password },
         {
           headers:{
@@ -22,21 +21,20 @@ const LoginPage = () => {
     )
    console.log("Login Success:", response.data);
     alert(response.data.message);
-    //navigate("/dashboard") 
+    navigate("/dashboard") 
   } catch (error) {
      if (error.response) {
       console.error("Login Error:", error.response.data);
-      alert(error.response.data.message); // e.g., "User does not exist"
+      alert(error.response.data.message);
     } else {
       console.error("Unknown Error:", error.message);
       alert("Something went wrong. Please try again.");
     }
   }
-    console.log({ email, password })
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-primary to-primaryhover-light">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
 
@@ -47,7 +45,7 @@ const LoginPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border text-primary border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondaryhover"
               required
             />
           </div>
@@ -58,14 +56,14 @@ const LoginPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 text-primary border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondaryhover"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300"
+            className="w-full bg-secondary hover:bg-primaryhover-light text-white font-semibold py-3 rounded-lg transition duration-300"
           >
             Log In
           </button>
@@ -73,7 +71,7 @@ const LoginPage = () => {
 
         <p className="mt-6 text-center text-gray-600">
           New here?{" "}
-          <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+          <Link to="/register" className="text-primary font-semibold hover:underline">
             Register
           </Link>
         </p>

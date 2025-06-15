@@ -9,7 +9,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const publishABill = asyncHandler(async (req, res) => {
     
     const { type, amount, dueDate, isPaid} = req.body
-    
+    console.log("We are inside upload bill function")
    if (!type || typeof type !== "string" || type.trim() === "") {
   throw new ApiError(400, "Invalid or missing bill type.");
 }

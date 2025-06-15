@@ -4,7 +4,9 @@ import './App.css'
 import Header from './Components/Header.jsx'
 import HomePage from './Pages/HomePage.jsx'
 import LoginPage from './Pages/LoginPage.jsx'
-import axios from 'axios'
+import RegisterPage from './Pages/RegisterPage.jsx'
+import DashboardPage from './Pages/DashboardPage.jsx'
+
 function App() {
   return (
     <>
@@ -12,8 +14,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        {/* <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </>
   )
