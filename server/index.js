@@ -1,39 +1,21 @@
-import express from 'express'
-import cors from 'cors'
-const app=express();
+import dotenv from "dotenv"
+// import 'dotenv/config';
+import connectDB from "./db/index.js";
+import {app} from "./app.js"
 
-app.use(cors({
-  origin: "https://legendary-dollop-v7p7vv6gq5cw6wj-5173.app.github.dev",
-  credentials: true
-}));
-
-app.get('/',(req,res)=>{
-  res.send("server is ready")
+dotenv.config({
+    path:'./.env'
 })
-
-app.get('/api/v1/jokes',(req,res)=>{
-const jokes=[
-  {
-    id:1,
-    title:'Joke 1',
-    content: 'This is a joke'
-  },
-  {
-    id:2,
-    title:'Joke 2',
-    content: 'This is 2nd joke'
-  },
-  {
-    id:3,
-    title:'Joke 3',
-    content: 'This is 3rd joke'
-  }
-]
-res.send(jokes)
+connectDB()
+.then(()=>{
+    app.on("error",(error)=>{
+        console.log("error: ",error)
+        throw error
+    });
+    app.listen(process.env.PORT ||8000,()=>{
+        console.log(`Server is running on ${process.env.PORT}`);
+    });
 })
-
-const port= process.env.PORT ||3000
-
-app.listen(port,()=>{
-  console.log(`Server is ready at port ${port}`)
+.catch((err)=>{
+    console.log("MongoDB connection failed")
 })
