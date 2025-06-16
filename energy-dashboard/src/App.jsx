@@ -8,12 +8,13 @@ import RegisterPage from './Pages/RegisterPage.jsx'
 import DashboardPage from './Pages/DashboardPage.jsx'
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>

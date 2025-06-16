@@ -2,10 +2,11 @@ import React, { useState } from "react"
 import { Link , useNavigate} from "react-router-dom"
 import axios from 'axios'
 
-const LoginPage = () => {
+const LoginPage = ({setIsLoggedIn}) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async(e) => {
     e.preventDefault() 
@@ -20,6 +21,7 @@ const LoginPage = () => {
           withCredentials: true }
     )
    console.log("Login Success:", response.data);
+   setIsLoggedIn(true)
     alert(response.data.message);
     navigate("/dashboard") 
   } catch (error) {
@@ -50,15 +52,21 @@ const LoginPage = () => {
             />
           </div>
 
-          <div>
+          <div className="relative">
             <label className="block mb-1 font-medium text-gray-700">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondaryhover"
               required
-            />
+            />       
+      <span
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-3 top-[38px] cursor-pointer text-gray-500"
+      >
+        👁️
+      </span>
           </div>
 
           <button

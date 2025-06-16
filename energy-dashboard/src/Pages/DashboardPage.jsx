@@ -5,11 +5,15 @@ const Dashboard = () => {
   const [bills, setBills] = useState([])
   const [type, setType] = useState("electricity")
   const [amount, setAmount] = useState("")
-  const [dueDate, setDueDate] = useState("")
+
+  const [dueDate, setDueDate] = useState(() => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+  });
+  
   const [isPaid, setIsPaid] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // Fetch bills on mount
   useEffect(() => {
     fetchBills()
   }, [])
@@ -19,10 +23,11 @@ const Dashboard = () => {
       const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/bills/mybills`, {
         withCredentials: true,
       })
-      setBills(response.data.bills)
+      console.log("this is response of fetch bill",response.data)
+      setBills(response.data.data)
     } catch (err) {
       console.error("Error fetching bills:", err)
-      alert("Could not load bills")
+      // alert("Could not load bills")
     }
   }
 
@@ -32,19 +37,20 @@ const Dashboard = () => {
       setLoading(true)
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/bills/uploadbill`,
-        { type, amount, dueDate },
+        { type, amount, dueDate, isPaid },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       )
       alert("Bill added!")
+      console.log(bills)
       setAmount("")
       setDueDate("")
-      fetchBills()
+      await fetchBills()
     } catch (err) {
       console.error("Error adding bill:", err)
-      alert("Failed to add bill")
+      // alert("Failed to add bill")
     } finally {
       setLoading(false)
     }
@@ -114,20 +120,21 @@ const Dashboard = () => {
           ) : (
             <table className="w-full table-auto border-collapse">
               <thead>
-                <tr className="bg-gray-200">
-                  <th className="text-left p-2">Type</th>
-                  <th className="text-left p-2">Amount</th>
-                  <th className="text-left p-2">Due Date</th>
-                  <th className="text-left p-2">Paid?</th>
+                <tr className="bg-primaryhover-light">
+                  <th className="text-left text-heading p-2">Type</th>
+                  <th className="text-left text-heading p-2">Amount</th>
+                  <th className="text-left text-heading p-2">Due Date</th>
+                  <th className="text-left text-heading p-2">Paid?</th>
                 </tr>
               </thead>
               <tbody>
                 {bills?.map((bill) => (
                   <tr key={bill._id} className="border-t">
-                    <td className="p-2 capitalize">{bill.type}</td>
-                    <td className="p-2">₹{bill.amount}</td>
-                    <td className="p-2">{new Date(bill.dueDate).toLocaleDateString()}</td>
-                    <td className="p-2">{bill.isPaid ? "✅" : "❌"}</td>
+                    
+                    <td className="text-black p-2 capitalize">{bill.type}</td>
+                    <td className="text-black p-2">₹{bill.amount}</td>
+                    <td className="text-black p-2">{new Date(bill.dueDate).toLocaleDateString()}</td>
+                    <td className="text-black p-2">{bill.isPaid ? "✅" : "❌"}</td>
                   </tr>
                 ))}
               </tbody>

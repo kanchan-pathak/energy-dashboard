@@ -47,7 +47,7 @@ if (typeof isPaid !== "boolean") {
 
 const getUserBills = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-
+  console.log("inside get user bill function")
   const bills = await Bill.find({ owner: userId }).sort({ dueDate: -1 });
 
   if (!bills || bills.length === 0) {
@@ -55,14 +55,39 @@ const getUserBills = asyncHandler(async (req, res) => {
       new ApiResponse(200, [], "No bills found for this user.")
     );
   }
-
+  console.log("bills:" ,bills)
   return res.status(200).json(
     new ApiResponse(200, bills, "Fetched user bills successfully.")
   );
 });
 
+const updateBill = asyncHandler(async (req, res) => {
+  const billId = req.params?.id
+  const userId = req.user._id 
+  const bill = await Bill.findOne({ _id: billId, owner: userId })
+  console.log("bill id", billId )
+  console.log("user id", userId )
+  if (!bill) {
+    throw new ApiError(404,"Bill not found")
+  }
+
+  const { type, amount, dueDate, isPaid } = req.body
+
+  bill.type = type || bill.type
+  bill.amount = amount || bill.amount
+  bill.dueDate = dueDate || bill.dueDate
+  bill.isPaid = typeof isPaid === "boolean" ? isPaid : bill.isPaid
+
+  const updatedBill = await bill.save()
+
+  res.status(200).json(
+    new ApiResponse(200,updatedBill,"Bill updated successfully")
+  )
+})
+
 
 export {
     publishABill,
-    getUserBills
+    getUserBills,
+    updateBill
 }
