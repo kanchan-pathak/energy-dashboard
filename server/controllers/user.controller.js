@@ -129,40 +129,6 @@ const logoutUser=asyncHandler(async(req,res)=>{
         new ApiResponse(200,{},"User Logged Out"))
 })
 
-const refreshAccessToken= asyncHandler(async(req,res)=>{
-    try {
-        const incomingRefreshToken=req.cookies?.refreshToken || req.body.refreshToken
-        
-        if(!incomingRefreshToken){
-            throw new ApiError(401,"unauthorized request")
-        }
-        const decodedToken=jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
-        const user=await User.findById(decodedToken?._id)
-        if(!user){
-            throw new ApiError(401,"invalid refresh token")
-        }
-        if(incomingRefreshToken !==user?.refreshToken){
-            throw new ApiError(401,"Refresh token expired or used")
-        }
-        const options={
-            httpOnly:true,
-            secure:process.env.NODE_ENV === 'production',
-            sameSite: 'Lax'
-        }
-        
-        const {newaccessToken,newrefreshToken}= await generateAccessAndRefreshToken(user._id)
-        
-        return res
-        .status(200)
-        .clearCookie("accessToken",newaccessToken,options)
-        .clearCookie("refreshToken",newrefreshToken,options)
-        .json(
-            new ApiResponse(200,{accessToken:newaccessToken,refreshToken:newrefreshToken},"New refresh token generated"))
-    } catch (error) {
-        throw new ApiError(401,error?.message || "invalid access token")
-    }
-})
-
 const changeCurrentPassword=asyncHandler(async (req,res) => {
     const {oldPassword,newPassword}=req.body
     const user=await User.findById(req.user?._id)
@@ -209,7 +175,6 @@ export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails

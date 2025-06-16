@@ -4,7 +4,6 @@ import
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken,
     changeCurrentPassword,
     getCurrentUser,
     updateAccountDetails
@@ -20,7 +19,7 @@ router.route("/login").post(loginUser)
 
 //secure pathways. where we check if they have access to this route
 router.route("/logout").post(verifyJWT,logoutUser)
-router.route("/refresh-token").post(refreshAccessToken)
+
 
 router.route("/change-password").post(verifyJWT,changeCurrentPassword)
 router.route("/current-user").post(verifyJWT,getCurrentUser)
