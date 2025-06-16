@@ -55,7 +55,7 @@ const getUserBills = asyncHandler(async (req, res) => {
       new ApiResponse(200, [], "No bills found for this user.")
     );
   }
-  console.log("bills:" ,bills)
+  // console.log("bills:" ,bills)
   return res.status(200).json(
     new ApiResponse(200, bills, "Fetched user bills successfully.")
   );
@@ -84,10 +84,38 @@ const updateBill = asyncHandler(async (req, res) => {
     new ApiResponse(200,updatedBill,"Bill updated successfully")
   )
 })
+const filterBills = asyncHandler(async (req, res) => {
+   let { month, year,search } = req.query;
+  const userId = req.user._id;
 
+  let query = { owner: userId };
+  if (month === "") month = null;
+  if (year === "") year = null;
+  if (search === "") search = null;
+  if (search) {
+  query.type = { $regex: search, $options: "i" };
+  }
+  if (year) year = +year;
+  if (month) month = +month;
+
+  if (month && year) {
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 1); 
+    query.dueDate = { $gte: start, $lt: end };
+  } else if (year) {
+    const start = new Date(year, 0, 1);
+    const end = new Date(year+1,0,1);
+    query.dueDate = { $gte: start, $lt: end };
+  }
+  // console.log(query);
+  const bills = await Bill.find(query).sort({ dueDate: -1 });
+  // console.log(bills)
+  res.status(200).json(new ApiResponse(200, bills, "Filtered bills"));
+});
 
 export {
     publishABill,
     getUserBills,
-    updateBill
+    updateBill,
+    filterBills
 }

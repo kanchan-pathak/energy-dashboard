@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
+import ProtectedRoute from "./Components/ProtectedRoute";
 import Header from './Components/Header.jsx'
 import HomePage from './Pages/HomePage.jsx'
 import LoginPage from './Pages/LoginPage.jsx'
@@ -16,7 +17,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute isLoggedIn={isLoggedIn}>
+          <DashboardPage />
+          </ProtectedRoute>} />
       </Routes>
     </>
   )

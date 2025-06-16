@@ -14,6 +14,11 @@ const Dashboard = () => {
   const [isPaid, setIsPaid] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
+  const[searchQuery,setSearchQuery]=useState("")
+
   const [editingBill, setEditingBill] = useState(null)
   const [formData, setFormData] = useState({
   type: "",
@@ -55,6 +60,9 @@ const Dashboard = () => {
       console.log(bills)
       setAmount("")
       setDueDate("")
+      setSearchQuery("")
+      setSelectedMonth("")
+      setSelectedYear("")
       await fetchBills()
     } catch (err) {
       console.error("Error adding bill:", err)
@@ -73,6 +81,19 @@ const Dashboard = () => {
     isPaid: bill.isPaid
   })
 }
+const handleFilter = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/bills/filter?month=${selectedMonth}&year=${selectedYear}&search=${searchQuery}`,
+      { withCredentials: true }
+    );
+    console.log(response.data)
+    setBills(response.data.data);
+  } catch (err) {
+    console.error("Error filtering bills", err);
+    alert("Filter failed. Try again.");
+  }
+};
   const handleUpdate = async () => {
   try {
     const response = await axios.post(
@@ -97,7 +118,16 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-3xl text-primary font-bold mb-6">Your Energy Bills</h2>
+       
 
+<select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+  <option value="">All Years</option>
+  {[2023, 2024, 2025].map((year) => (
+    <option key={year} value={year}>{year}</option>
+  ))}
+</select>
+
+<button onClick={handleFilter}>Filter</button>
         <form onSubmit={handleAddBill} className="mb-8 bg-white p-6 rounded-xl shadow space-y-4">
           <h3 className="text-xl font-semibold">Add New Bill</h3>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -149,8 +179,46 @@ const Dashboard = () => {
             {loading ? "Adding..." : "Add Bill"}
           </button>
         </form>
+        <div className="flex flex-wrap gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Search by type..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 border rounded text-black"
+          />
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="p-2 border rounded text-black"
+          >
+            <option value="">All Months</option>
+            {[...Array(12)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("default", { month: "long" })}
+              </option>
+            ))}
+          </select>
 
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="p-2 border rounded text-black"
+          >
+            <option value="">All Years</option>
+            {[2023, 2024, 2025].map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleFilter}
+            className="bg-primary text-white px-4 py-2 rounded hover:bg-primaryhover-light"
+          >
+            Filter
+          </button>
+        </div>
         <div className="bg-white p-6 rounded-xl shadow">
+
           {bills?.length === 0 ? (
             <p className="text-primary font-bold">No bills found.</p>
           ) : (
