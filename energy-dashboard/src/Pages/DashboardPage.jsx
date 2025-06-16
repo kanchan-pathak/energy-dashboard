@@ -14,6 +14,14 @@ const Dashboard = () => {
   const [isPaid, setIsPaid] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const [editingBill, setEditingBill] = useState(null)
+  const [formData, setFormData] = useState({
+  type: "",
+  amount: "",
+  dueDate: "",
+  isPaid: false
+  })
+
   useEffect(() => {
     fetchBills()
   }, [])
@@ -55,6 +63,35 @@ const Dashboard = () => {
       setLoading(false)
     }
   }
+
+  const handleEditClick = (bill) => {
+  setEditingBill(bill)
+  setFormData({
+    type: bill.type,
+    amount: bill.amount,
+    dueDate: bill.dueDate.split("T")[0],
+    isPaid: bill.isPaid
+  })
+}
+  const handleUpdate = async () => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v1/bills/updatebill/${editingBill._id}`,
+      formData,
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true
+      }
+    )
+
+    alert("Bill updated!")
+    setEditingBill(null)
+    fetchBills() // refresh list
+  } catch (err) {
+    console.error("Update failed", err)
+    alert("Update failed")
+  }
+}
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -113,10 +150,9 @@ const Dashboard = () => {
           </button>
         </form>
 
-        {/* Bill List */}
         <div className="bg-white p-6 rounded-xl shadow">
           {bills?.length === 0 ? (
-            <p>No bills found.</p>
+            <p className="text-primary font-bold">No bills found.</p>
           ) : (
             <table className="w-full table-auto border-collapse">
               <thead>
@@ -125,6 +161,7 @@ const Dashboard = () => {
                   <th className="text-left text-heading p-2">Amount</th>
                   <th className="text-left text-heading p-2">Due Date</th>
                   <th className="text-left text-heading p-2">Paid?</th>
+                  <th className="text-left text-heading p-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -135,11 +172,61 @@ const Dashboard = () => {
                     <td className="text-black p-2">₹{bill.amount}</td>
                     <td className="text-black p-2">{new Date(bill.dueDate).toLocaleDateString()}</td>
                     <td className="text-black p-2">{bill.isPaid ? "✅" : "❌"}</td>
+                    <td className="text-black p-2">
+                    <button
+                    className="px-3 py-1 text-sm bg-secondary text-white rounded font-semibold hover:bg-primaryhover-light"
+                    onClick={() => handleEditClick(bill)}>
+                    Edit
+                    </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
+          {editingBill && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="bg-white p-4 rounded-lg w-[300px]">
+      <h2 className="text-lg text-primary font-bold mb-2">Edit Bill</h2>
+
+      <label className="text-primary font-semibold">Type:</label>
+      <input
+        value={formData.type}
+        onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+        className="text-black w-full mb-2 p-2 border rounded"
+      />
+
+      <label className="text-primary font-semibold">Amount:</label>
+      <input
+        type="number"
+        value={formData.amount}
+        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+        className="text-black w-full mb-2 p-2 border rounded"
+      />
+
+      <label className="text-primary font-semibold">Due Date:</label>
+      <input
+        type="date"
+        value={formData.dueDate}
+        onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+        className="text-black w-full mb-2 p-2 border rounded"
+      />
+
+      <label className="text-primary font-semibold">Paid:</label>
+      <input
+        type="checkbox"
+        checked={formData.isPaid}
+        onChange={(e) => setFormData({ ...formData, isPaid: e.target.checked })}
+        className="text-black ml-2"
+      />
+
+      <div className="flex justify-end gap-2 mt-4">
+        <button onClick={() => setEditingBill(null)} className="px-3 py-1 bg-secondary rounded">Cancel</button>
+        <button onClick={handleUpdate} className="px-3 py-1 bg-primary text-white rounded">Save</button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>
